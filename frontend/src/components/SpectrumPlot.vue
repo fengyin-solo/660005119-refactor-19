@@ -1,18 +1,16 @@
 <template>
-  <div class="panel">
-    <h3>📊 FFT频谱图</h3>
-    <div ref="chart" class="chart"></div>
-  </div>
+  <div ref="chart" class="chart"></div>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted } from 'vue'
 import * as echarts from 'echarts'
 import { useSignalStore } from '../store/signal'
 const store = useSignalStore()
 const chart = ref<HTMLDivElement>()
 let instance: echarts.ECharts | null = null
 
+// 面板只在 ready 时挂载，读数逻辑与原先一致
 function update() {
   if (!instance || !store.result) return
   const { frequencies, magnitudes } = store.result.spectrum
@@ -38,12 +36,9 @@ function update() {
 onMounted(() => {
   if (chart.value) { instance = echarts.init(chart.value); update() }
 })
-watch(() => store.result, update)
 onUnmounted(() => { instance?.dispose() })
 </script>
 
 <style scoped>
-.panel { background:#1a2332; border-radius:8px; padding:16px; border:1px solid #2a3a4a }
-.panel h3 { margin-bottom:8px; color:#90caf9; font-size:14px }
 .chart { width:100%; height:280px }
 </style>

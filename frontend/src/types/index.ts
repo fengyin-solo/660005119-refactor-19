@@ -28,6 +28,9 @@ export interface ModulationResult {
   frequencyOffset: number | null
 }
 
+/** 面板的三种统一状态：空 / 计算中 / 已有结果 */
+export type PanelStatus = 'empty' | 'loading' | 'ready'
+
 export interface AnalysisResult {
   spectrum: SpectrumData
   waterfall: WaterfallRow[]

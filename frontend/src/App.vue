@@ -24,26 +24,41 @@
         </el-form>
       </div>
 
-      <div v-if="store.result" class="results-grid">
-        <SpectrumPlot />
-        <ConstellationPlot />
+      <el-alert
+        v-if="error" :title="error" type="error" show-icon :closable="false"
+        class="error-banner"
+      />
+
+      <!-- 面板始终挂载，空态/计算中/结果由 PanelShell 统一渲染；顺序由 registry 决定 -->
+      <div class="panels-grid">
+        <PanelShell
+          v-for="p in panels" :key="p.key" :title="p.title" :wide="p.wide"
+        >
+          <component :is="p.component" />
+        </PanelShell>
       </div>
-      <WaterfallPlot v-if="store.result" />
-      <ModulationResult v-if="store.result" />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
-import { reactive } from 'vue'
-import SpectrumPlot from './components/SpectrumPlot.vue'
-import ConstellationPlot from './components/ConstellationPlot.vue'
-import WaterfallPlot from './components/WaterfallPlot.vue'
-import ModulationResult from './components/ModulationResult.vue'
+import { reactive, ref } from 'vue'
+import PanelShell from './components/PanelShell.vue'
+import { panels } from './panels/registry'
 import { useSignalStore } from './store/signal'
+
 const store = useSignalStore()
 const form = reactive({ modulation: 'QPSK', samples: 1024, snr: 20 })
-function generate() { store.analyze({ ...form }) }
+const error = ref('')
+
+async function generate() {
+  error.value = ''
+  try {
+    await store.analyze({ ...form })
+  } catch {
+    error.value = '分析失败，请确认后端服务已启动后重试。'
+  }
+}
 </script>
 
 <style>
@@ -55,5 +70,6 @@ body{font-family:system-ui,sans-serif;background:#0f1923;color:#e0e0e0}
 .subtitle{opacity:.7;margin-top:4px;font-size:.85rem}
 .app-main{padding:16px 40px}
 .control-card{background:#1a2332;border-radius:8px;padding:16px 20px;margin-bottom:16px;border:1px solid #2a3a4a}
-.results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.panels-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.error-banner{margin-bottom:16px}
 </style>
