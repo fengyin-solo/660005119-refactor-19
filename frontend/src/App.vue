@@ -24,22 +24,23 @@
         </el-form>
       </div>
 
-      <div v-if="store.result" class="results-grid">
-        <SpectrumPlot />
-        <ConstellationPlot />
+      <!-- 面板顺序唯一由 PANELS 决定，所有面板始终挂载、统一按状态渲染 -->
+      <div class="results-grid">
+        <PanelShell
+          v-for="panel in PANELS"
+          :key="panel.key"
+          :panel="panel"
+          :class="`panel-span-${panel.span}`"
+        />
       </div>
-      <WaterfallPlot v-if="store.result" />
-      <ModulationResult v-if="store.result" />
     </main>
   </div>
 </template>
 
 <script setup lang="ts">
 import { reactive } from 'vue'
-import SpectrumPlot from './components/SpectrumPlot.vue'
-import ConstellationPlot from './components/ConstellationPlot.vue'
-import WaterfallPlot from './components/WaterfallPlot.vue'
-import ModulationResult from './components/ModulationResult.vue'
+import PanelShell from './components/PanelShell.vue'
+import { PANELS } from './panels'
 import { useSignalStore } from './store/signal'
 const store = useSignalStore()
 const form = reactive({ modulation: 'QPSK', samples: 1024, snr: 20 })
@@ -56,4 +57,5 @@ body{font-family:system-ui,sans-serif;background:#0f1923;color:#e0e0e0}
 .app-main{padding:16px 40px}
 .control-card{background:#1a2332;border-radius:8px;padding:16px 20px;margin-bottom:16px;border:1px solid #2a3a4a}
 .results-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.results-grid .panel-span-24{grid-column:1 / -1}
 </style>

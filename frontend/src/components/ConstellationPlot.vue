@@ -1,12 +1,9 @@
 <template>
-  <div class="panel">
-    <h3>⭐ 星座图 (IQ平面)</h3>
-    <canvas ref="cvs" width="300" height="300" class="const-canvas"></canvas>
-  </div>
+  <canvas ref="cvs" width="300" height="300" class="const-canvas"></canvas>
 </template>
 
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useSignalStore } from '../store/signal'
 const store = useSignalStore()
 const cvs = ref<HTMLCanvasElement>()
@@ -18,8 +15,7 @@ function draw() {
   ctx.beginPath(); ctx.moveTo(0, H/2); ctx.lineTo(W, H/2); ctx.stroke()
   ctx.beginPath(); ctx.moveTo(W/2, 0); ctx.lineTo(W/2, H); ctx.stroke()
 
-  const pts = store.result?.constellation || []
-  if (pts.length === 0) return
+  const pts = store.result!.constellation
   const scale = W * 0.4
   for (const pt of pts) {
     const x = W/2 + pt.i * scale, y = H/2 - pt.q * scale
@@ -32,11 +28,8 @@ function draw() {
 }
 
 onMounted(draw)
-watch(() => store.result, draw)
 </script>
 
 <style scoped>
-.panel { background:#1a2332; border-radius:8px; padding:16px; border:1px solid #2a3a4a }
-.panel h3 { margin-bottom:8px; color:#90caf9; font-size:14px }
 .const-canvas { display:block; margin:0 auto; border-radius:4px }
 </style>

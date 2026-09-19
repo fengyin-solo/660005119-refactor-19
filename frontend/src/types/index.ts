@@ -35,4 +35,7 @@ export interface AnalysisResult {
   modulation: ModulationResult
 }
 
+/** 面板统一状态：结果为空 / 正在计算 / 已有结果 */
+export type AnalysisStatus = 'empty' | 'loading' | 'ready'
+
 export const MODULATION_TYPES = ['AM', 'FM', 'BPSK', 'QPSK', '16QAM']

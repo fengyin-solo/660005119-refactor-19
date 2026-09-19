@@ -1,12 +1,18 @@
 import { defineStore } from 'pinia'
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import axios from 'axios'
-import type { AnalysisResult } from '@/types'
+import type { AnalysisResult, AnalysisStatus } from '@/types'
 
 export const useSignalStore = defineStore('signal', () => {
   const loading = ref(false)
   const result = ref<AnalysisResult | null>(null)
   const activeView = ref('spectrum')
+
+  /** 唯一的状态判断入口：面板只根据该状态渲染 */
+  const status = computed<AnalysisStatus>(() => {
+    if (loading.value) return 'loading'
+    return result.value ? 'ready' : 'empty'
+  })
 
   async function analyze(params: { modulation: string; samples: number; snr: number }) {
     loading.value = true
@@ -26,5 +32,5 @@ export const useSignalStore = defineStore('signal', () => {
     } finally { loading.value = false }
   }
 
-  return { loading, result, activeView, analyze, importCSV }
+  return { loading, result, activeView, status, analyze, importCSV }
 })
